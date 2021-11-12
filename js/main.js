@@ -23,7 +23,7 @@ function toggleCommentSection(postId) {
     if (!postId) {
         return;
     }
-    let section = document.getElementById("#"+postId);
+    let section = document.querySelector("section[data-post-id='"+postId+"'] ");
     if (section) {
         section.classList.toggle("hide");
     }
@@ -54,10 +54,28 @@ function deleteChildElements(parentElement) {
     return parentElement;
 }
 
+function displayEvents(element, types = ["click"]) {
+    for (let j = 0; j < types.length; j++) {
+        if (typeof element[types[j]] === 'function') {
+          console.log({
+            "node": element,
+            "type": types[j],
+            "func": element[types[j]].toString(),
+          });
+        }
+    }
+}
 function addButtonListeners() {
+    const types = ["click"]
     let buttons = document.querySelectorAll("main button");
+    console.log("buttons",buttons);
     buttons.forEach(button => {
-        button.addEventListener("click",toggleComments)
+        const postId = button.dataset.id;
+        button.addEventListener("click",(event) => toggleComments(event, postId))
+
+        // dislay details to identify why test is not passing
+        console.log("BUTTON", postId, button.listener, button);
+        displayEvents(button)
     })
     return buttons;
 }
@@ -65,7 +83,7 @@ function addButtonListeners() {
 function removeButtonListeners() {
     let buttons = document.querySelectorAll("main button");
     buttons.forEach(button => {
-        button.removeEventListener("click",toggleComments)
+        button.removeEventListener("click",(event) => toggleComments(event, postId))
     })
     return buttons;
 }
@@ -83,7 +101,6 @@ function createComments(comments) {
         article.append(h3,p1,p2);
         commentList.appendChild(article);
     })
-    console.log("commentList",[commentList])
     return commentList;
 }
 
@@ -94,7 +111,7 @@ function populateSelectMenu(selectOptions) {
     const selectMenu = document.querySelector("#selectMenu");
     const options = createSelectOptions(selectOptions);
     options.forEach(option => {
-        selectMenu.append(options); // TODO: try spread here
+        selectMenu.append(option); // TODO: try spread here
     });
     return selectMenu;
 }
@@ -161,9 +178,6 @@ async function displayComments(postId) {
     return section;
 }
 
-
-
-
 async function createPosts(posts) {
     if (!posts) {
         return;
@@ -179,26 +193,62 @@ async function createPosts(posts) {
         const authorp = createElemWithText('p',`Author: ${author.name} with ${author.company.name}`)
         const catchphrase = createElemWithText('p',author.company.catchPhrase);
         let button = createElemWithText('button','Show Comments');
+        button.dataset.id = post.id;
+        button.setAttribute("data-post-id", post.id);
         article.append(h2,p,postp,authorp,catchphrase,button);
         const section = await displayComments(post.id);
         article.append(section);
-        console.log("Article",post.id,article);
         fragment.appendChild(article);
     }
-    console.log("FRAGMENT",fragment.children)
     return fragment;
 }
 
-window.onload = () => {
-    const  xyz = async() => {
-        const posts = await getUserPosts(1);
-        console.log(posts);
-    const com = await createPosts(posts);
-    console.log("Comments",com.children);
-    }
-    xyz();
-    }
-
-function toggleComments() {
-
+async function displayPosts(posts) {
+    const main = document.querySelector("main");
+    const element = (posts) ? await createPosts(posts) : createElemWithText("p","Select an Employee to display their posts.","default-text");
+    main.append(element);
+    return element;
 }
+
+function toggleComments(event, postId) {
+    if (!event || !postId) {
+        return;
+    }
+    console.log("Toggle comments for ",postId)
+    event.target.listener = true;
+    const section = toggleCommentSection(postId);
+    const button = toggleCommentButton(postId);
+    return [ section, button ];
+}
+
+async function refreshPosts(posts) {
+    if (!posts) {
+        return;
+    }
+    const buttons = removeButtonListeners();
+    const main = deleteChildElements(document.querySelector("main"));
+    const postsFragment = await displayPosts(posts);
+    const addButtons = addButtonListeners();
+    return [buttons, main, postsFragment, addButtons ]
+}
+
+async function selectMenuChangeEventHandler(event) {
+    let userId = event?.target?.value || 1;
+    const posts  = await getUserPosts(userId);
+    const refreshPostsArray = await refreshPosts(posts);
+    return [userId, posts, refreshPostsArray];
+}
+
+async function initPage() {
+    const users = await getUsers();
+    const select = populateSelectMenu(users);
+    return [users, select];
+}
+
+async function initApp() {
+    initPage();
+    const select = document.getElementById("selectMenu");
+    select.addEventListener("change",selectMenuChangeEventHandler);
+}
+
+document.addEventListener("DOMContentLoaded",initApp);

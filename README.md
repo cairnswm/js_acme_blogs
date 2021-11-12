@@ -1,21 +1,7 @@
 # Acme Blogs
 
-[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/import/github/gitdagray/js_acme_blogs)
+FHSU INF 651 Front End Development 1 - Final Project
 
-**Start by clicking the Remix on Glitch button above.**
+[![Netlify Status](https://api.netlify.com/api/v1/badges/675a9463-5366-4f3c-9829-d301fabd988b/deploy-status)](https://app.netlify.com/sites/williamcairns-js-acme-blog/deploys)
 
-_Once you are working with your own copy of the project on Glitch..._
 
-**Follow the directions available in Blackboard** 
-
-_DO NOT CHANGE any of the pre-existing code. Your code only goes in main.js._
-
-Did you miss some?
-
-It's ok. Go back and make corrections. Then check your score again!
-
-When you are ready to submit your work, follow the instructions that are at the top of the score page.
-
-### Academic Honesty
-
-**DO NOT COPY** - Avoid plagiargism and adhere to the spirit of this [Academic Honesty Policy](https://www.freecodecamp.org/news/academic-honesty-policy/).
