@@ -74,15 +74,16 @@ function createComments(comments) {
     if (!comments) {
         return;
     }
-    let commentList = document.createDocumentFragment()
+    let commentList = document.createDocumentFragment();
     comments.forEach(comment => {
         let article = document.createElement("article");
         let h3 = createElemWithText("h3",comment.name);
         let p1 = createElemWithText("p",comment.body);
         let p2 = createElemWithText("p",`From: ${comment.email}`);
         article.append(h3,p1,p2);
-        commentList.append(article);
+        commentList.appendChild(article);
     })
+    console.log("commentList",[commentList])
     return commentList;
 }
 
@@ -146,6 +147,57 @@ async function getPostComments(postId) {
         console.error("Error getting Post Comments "+postId)
     }
 }
+
+async function displayComments(postId) {
+    if (!postId) {
+        return;
+    }
+    let section = document.createElement('section');
+    section.setAttribute("data-post-id", postId);
+    section.classList.add('comments','hide');
+    const comments = await getPostComments(postId);
+    const fragment = createComments(comments);
+    section.appendChild(fragment);
+    return section;
+}
+
+
+
+
+async function createPosts(posts) {
+    if (!posts) {
+        return;
+    }
+    let fragment = document.createDocumentFragment();
+    for (let i=0; i < posts.length; i++) {
+        post = posts[i];
+        let article = document.createElement('article');
+        const h2 = createElemWithText('h2',post.title);
+        const p = createElemWithText('p',post.body);
+        const postp = createElemWithText('p',`Post ID: ${post.id}`);
+        const author = await getUser(post.userId);
+        const authorp = createElemWithText('p',`Author: ${author.name} with ${author.company.name}`)
+        const catchphrase = createElemWithText('p',author.company.catchPhrase);
+        let button = createElemWithText('button','Show Comments');
+        article.append(h2,p,postp,authorp,catchphrase,button);
+        const section = await displayComments(post.id);
+        article.append(section);
+        console.log("Article",post.id,article);
+        fragment.appendChild(article);
+    }
+    console.log("FRAGMENT",fragment.children)
+    return fragment;
+}
+
+window.onload = () => {
+    const  xyz = async() => {
+        const posts = await getUserPosts(1);
+        console.log(posts);
+    const com = await createPosts(posts);
+    console.log("Comments",com.children);
+    }
+    xyz();
+    }
 
 function toggleComments() {
 
