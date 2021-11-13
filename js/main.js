@@ -12,6 +12,7 @@ function createOption(value, text) {
     option.value = value;
     return option;
 }
+
 function createSelectOptions(users) {
     if (!users) {
         return;
@@ -54,6 +55,8 @@ function deleteChildElements(parentElement) {
     return parentElement;
 }
 
+// own code
+// Display the events linked on an event (ie listeners)
 function displayEvents(element, types = ["click"]) {
     for (let j = 0; j < types.length; j++) {
         if (typeof element[types[j]] === 'function') {
@@ -65,15 +68,16 @@ function displayEvents(element, types = ["click"]) {
         }
     }
 }
+//
 function addButtonListeners() {
     const types = ["click"]
     let buttons = document.querySelectorAll("main button");
-    console.log("buttons",buttons);
     buttons.forEach(button => {
         const postId = button.dataset.id;
         button.addEventListener("click",(event) => toggleComments(event, postId))
 
-        // dislay details to identify why test is not passing
+        // display details to identify why test is not passing
+        // display events shows a listener is added but  test doesnt pass
         console.log("BUTTON", postId, button.listener, button);
         displayEvents(button)
     })
@@ -88,17 +92,22 @@ function removeButtonListeners() {
     return buttons;
 }
 
+function createCommentBlock(comment) {
+    let article = document.createElement("article");
+    let h3 = createElemWithText("h3", comment.name);
+    let p1 = createElemWithText("p", comment.body);
+    let p2 = createElemWithText("p", `From: ${comment.email}`);
+    article.append(h3, p1, p2);
+    return article;
+}
+
 function createComments(comments) {
     if (!comments) {
         return;
     }
     let commentList = document.createDocumentFragment();
     comments.forEach(comment => {
-        let article = document.createElement("article");
-        let h3 = createElemWithText("h3",comment.name);
-        let p1 = createElemWithText("p",comment.body);
-        let p2 = createElemWithText("p",`From: ${comment.email}`);
-        article.append(h3,p1,p2);
+        let article = createCommentBlock(comment);
         commentList.appendChild(article);
     })
     return commentList;
@@ -117,22 +126,30 @@ function populateSelectMenu(selectOptions) {
 }
 
 async function getUsers() {
+    console.log("getUsers")
+    console.time("getUsers")
     try {
         let users = await fetch("https://jsonplaceholder.typicode.com/users")
         .then(response => response.json());
+        
+        console.timeEnd("getUsers")
         return users;
     } catch(error) {
         console.error("Error getting Users")
     }
+    
 }
 
 async function getUserPosts(userId) {
     if (!userId) {
         return;
     }
+    
+    console.time("getUserPosts")
     try {
         let posts = await fetch("https://jsonplaceholder.typicode.com/users/"+userId+"/posts")
         .then(response => response.json());
+        console.timeEnd("getUserPosts")
         return posts;
     } catch(error) {
         console.error("Error getting User Posts "+userId)
@@ -156,9 +173,12 @@ async function getPostComments(postId) {
     if (!postId) {
         return;
     }
+    
+    console.time("getPostComments")
     try {
         let postComments = await fetch("https://jsonplaceholder.typicode.com/posts/"+postId+"/comments")
         .then(response => response.json());
+        console.timeEnd("getPostComments")
         return postComments;
     } catch(error) {
         console.error("Error getting Post Comments "+postId)
@@ -214,7 +234,6 @@ function toggleComments(event, postId) {
     if (!event || !postId) {
         return;
     }
-    console.log("Toggle comments for ",postId)
     event.target.listener = true;
     const section = toggleCommentSection(postId);
     const button = toggleCommentButton(postId);
