@@ -98,10 +98,7 @@ function populateSelectMenu(selectOptions) {
         return;
     }
     const selectMenu = document.querySelector("#selectMenu");
-    const options = createSelectOptions(selectOptions);
-    options.forEach(option => {
-        selectMenu.append(option); // TODO: try spread here
-    });
+    selectMenu.append(...createSelectOptions(selectOptions));
     return selectMenu;
 }
 
@@ -113,14 +110,12 @@ async function getUsers() {
     } catch(error) {
         console.error("Error getting Users")
     }
-    
 }
 
 async function getUserPosts(userId) {
     if (!userId) {
         return;
     }
-    
     try {
         let posts = await fetch("https://jsonplaceholder.typicode.com/users/"+userId+"/posts")
         .then(response => response.json());
@@ -146,8 +141,7 @@ async function getUser(userId) {
 async function getPostComments(postId) {
     if (!postId) {
         return;
-    }
-    
+    }    
     try {
         let postComments = await fetch("https://jsonplaceholder.typicode.com/posts/"+postId+"/comments")
         .then(response => response.json());
