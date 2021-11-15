@@ -55,31 +55,11 @@ function deleteChildElements(parentElement) {
     return parentElement;
 }
 
-// own code
-// Display the events linked on an event (ie listeners)
-function displayEvents(element, types = ["click"]) {
-    for (let j = 0; j < types.length; j++) {
-        if (typeof element[types[j]] === 'function') {
-          console.log({
-            "node": element,
-            "type": types[j],
-            "func": element[types[j]].toString(),
-          });
-        }
-    }
-}
-//
 function addButtonListeners() {
     let buttons = document.querySelectorAll("main button");
     buttons.forEach(button => {
-        console.log("button",button.dataset, button.dataset.id, typeof button.dataset.id);
         const postId = button.dataset.postId;
         button.addEventListener("click",(event) => toggleComments(event, postId))
-
-        // display details to identify why test is not passing
-        // display events shows a listener is added but  test doesnt pass
-        console.log("BUTTON", postId, button.listener, button);
-        displayEvents(button)
     })
     return buttons;
 }
@@ -126,13 +106,9 @@ function populateSelectMenu(selectOptions) {
 }
 
 async function getUsers() {
-    console.log("getUsers")
-    console.time("getUsers")
     try {
         let users = await fetch("https://jsonplaceholder.typicode.com/users")
         .then(response => response.json());
-        
-        console.timeEnd("getUsers")
         return users;
     } catch(error) {
         console.error("Error getting Users")
@@ -145,11 +121,9 @@ async function getUserPosts(userId) {
         return;
     }
     
-    console.time("getUserPosts")
     try {
         let posts = await fetch("https://jsonplaceholder.typicode.com/users/"+userId+"/posts")
         .then(response => response.json());
-        console.timeEnd("getUserPosts")
         return posts;
     } catch(error) {
         console.error("Error getting User Posts "+userId)
@@ -174,11 +148,9 @@ async function getPostComments(postId) {
         return;
     }
     
-    console.time("getPostComments")
     try {
         let postComments = await fetch("https://jsonplaceholder.typicode.com/posts/"+postId+"/comments")
         .then(response => response.json());
-        console.timeEnd("getPostComments")
         return postComments;
     } catch(error) {
         console.error("Error getting Post Comments "+postId)
