@@ -70,10 +70,10 @@ function displayEvents(element, types = ["click"]) {
 }
 //
 function addButtonListeners() {
-    const types = ["click"]
     let buttons = document.querySelectorAll("main button");
     buttons.forEach(button => {
-        const postId = button.dataset.id;
+        console.log("button",button.dataset, button.dataset.id, typeof button.dataset.id);
+        const postId = button.dataset.postId;
         button.addEventListener("click",(event) => toggleComments(event, postId))
 
         // display details to identify why test is not passing
